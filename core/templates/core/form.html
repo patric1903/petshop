@@ -1,0 +1,20 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-lg-7">
+<div class="card shadow-sm"><div class="card-body p-4">
+  <h4 class="mb-3">{{ titulo }}</h4>
+  <form method="post" novalidate>{% csrf_token %}
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+    {% for f in form %}
+      <div class="mb-3">
+        <label class="form-label" for="{{ f.id_for_label }}">{{ f.label }}</label>
+        {{ f }}
+        {% if f.help_text %}<div class="form-text">{{ f.help_text }}</div>{% endif %}
+        {% for e in f.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+      </div>
+    {% endfor %}
+    <button class="btn btn-primary">Salvar</button>
+    <a class="btn btn-link" href="{% if voltar_pk %}{% url voltar voltar_pk %}{% else %}{% url voltar %}{% endif %}">Cancelar</a>
+  </form>
+</div></div></div></div>
+{% endblock %}

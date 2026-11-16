@@ -1,0 +1,30 @@
+{% extends "core/base.html" %}
+{% block content %}
+<h4>Financeiro</h4>
+<form class="row g-2 my-3">
+  <div class="col-auto">{{ form.inicio }}</div><div class="col-auto">{{ form.fim }}</div>
+  <div class="col-auto"><button class="btn btn-primary">Gerar relatório</button></div>
+</form>
+{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="card shadow-sm"><div class="card-body">
+    <div class="text-muted">Receita de {{ ini|date:"d/m/Y" }} a {{ fim|date:"d/m/Y" }}</div>
+    <div class="fs-3">R$ {{ total|floatformat:2 }}</div></div></div></div>
+  <div class="col-md-8"><div class="card shadow-sm"><div class="card-body">
+    {% for f in por_forma %}<span class="badge text-bg-light border me-2">{{ f.forma_pagamento }}: R$ {{ f.t|floatformat:2 }}</span>
+    {% empty %}<span class="text-muted">Sem receitas no período.</span>{% endfor %}</div></div></div>
+</div>
+{% if pendentes %}
+<div class="card shadow-sm mb-3"><div class="card-header">Atendimentos concluídos sem receita</div>
+<ul class="list-group list-group-flush">
+{% for a in pendentes %}<li class="list-group-item d-flex justify-content-between">
+  <span>{{ a }} · R$ {{ a.valor_cobrado }}</span>
+  <a class="btn btn-sm btn-success" href="{% url 'receita_nova' a.pk %}">Registrar receita</a></li>{% endfor %}
+</ul></div>{% endif %}
+<table class="table bg-white shadow-sm">
+  <thead><tr><th>Data</th><th>Atendimento</th><th>Forma</th><th class="text-end">Valor</th></tr></thead>
+  {% for r in receitas %}<tr><td>{{ r.data_pagamento|date:"d/m/Y" }}</td><td>{{ r.agendamento }}</td>
+    <td>{{ r.get_forma_pagamento_display }}</td><td class="text-end">R$ {{ r.valor }}</td></tr>
+  {% empty %}<tr><td colspan="4" class="text-muted">Nenhuma receita no período.</td></tr>{% endfor %}
+</table>
+{% endblock %}

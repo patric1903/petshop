@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3"><h4>Serviços</h4>
+  <a class="btn btn-primary" href="{% url 'servico_novo' %}">Novo serviço</a></div>
+<p class="text-muted">Alterar o preço aqui não muda o valor de atendimentos já agendados (o valor fica congelado no agendamento).</p>
+<table class="table bg-white shadow-sm">
+  <thead><tr><th>Serviço</th><th>Tipo</th><th>Duração</th><th>Preço</th><th>Situação</th><th></th></tr></thead>
+  {% for s in servicos %}<tr><td>{{ s.nome }}</td><td>{{ s.get_tipo_display }}</td><td>{{ s.duracao_minutos }} min</td>
+    <td>R$ {{ s.preco }}</td><td>{% if s.ativo %}Ativo{% else %}Inativo{% endif %}</td>
+    <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'servico_editar' s.pk %}">Editar</a></td></tr>{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "core/base.html" %}
+{% block content %}
+<h4>Hoje, {{ data_hoje|date:"d/m/Y" }}</h4>
+<div class="row g-3 mt-1">
+  <div class="col-lg-7"><div class="card shadow-sm"><div class="card-header">
+    {% if user.perfil == 'PROFISSIONAL' %}Minha agenda de hoje{% else %}Atendimentos de hoje{% endif %}</div>
+    <ul class="list-group list-group-flush">
+    {% for a in hoje %}
+      <li class="list-group-item d-flex justify-content-between">
+        <span>{{ a.inicio|time:"H:i" }}–{{ a.hora_fim|time:"H:i" }} · <strong>{{ a.pet.nome }}</strong> · {{ a.servico }}
+          {% if user.perfil != 'PROFISSIONAL' %}<small class="text-muted">({{ a.profissional }})</small>{% endif %}</span>
+        <span class="badge text-bg-{% if a.status == 'CONCLUIDO' %}success{% else %}secondary{% endif %}">{{ a.get_status_display }}</span>
+      </li>
+    {% empty %}<li class="list-group-item text-muted">Nenhum atendimento hoje.</li>{% endfor %}
+    </ul></div></div>
+  {% if user.perfil != 'PROFISSIONAL' %}
+  <div class="col-lg-5"><div class="card shadow-sm"><div class="card-header">Alertas de vacina</div>
+    <ul class="list-group list-group-flush">
+    {% for v in vacinas_alerta %}
+      <li class="list-group-item">
+        <a href="{% url 'pet_historico' v.pet.pk %}">{{ v.pet.nome }}</a> – {{ v.nome }}
+        <span class="badge text-bg-{% if v.situacao == 'vencida' %}danger{% else %}warning{% endif %}">
+          {% if v.situacao == 'vencida' %}vencida{% else %}vence{% endif %} {{ v.data_proxima_dose|date:"d/m/Y" }}</span>
+        <div class="small text-muted">Tutor: {{ v.pet.cliente.nome }} · {{ v.pet.cliente.telefone }}</div>
+      </li>
+    {% empty %}<li class="list-group-item text-muted">Nenhuma vacina vencida ou a vencer.</li>{% endfor %}
+    </ul></div></div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h4 class="mb-0">Agenda de {{ dia|date:"d/m/Y" }}</h4>
+  <div>
+    <a class="btn btn-outline-secondary btn-sm" href="?data={{ anterior|date:'Y-m-d' }}&profissional={{ prof_id }}">◀</a>
+    <a class="btn btn-outline-secondary btn-sm" href="?data={{ proximo|date:'Y-m-d' }}&profissional={{ prof_id }}">▶</a>
+    {% if user.perfil != 'PROFISSIONAL' %}<a class="btn btn-primary btn-sm" href="{% url 'agendar' %}">Novo agendamento</a>{% endif %}
+  </div>
+</div>
+<form class="row g-2 mb-3">
+  <div class="col-auto"><input type="date" name="data" value="{{ dia|date:'Y-m-d' }}" class="form-control"></div>
+  {% if user.perfil != 'PROFISSIONAL' %}
+  <div class="col-auto"><select name="profissional" class="form-select">
+    <option value="">Todos os profissionais</option>
+    {% for p in profissionais %}<option value="{{ p.pk }}" {% if prof_id == p.pk|stringformat:"s" %}selected{% endif %}>{{ p.nome }}</option>{% endfor %}
+  </select></div>{% endif %}
+  <div class="col-auto"><button class="btn btn-outline-primary">Filtrar</button></div>
+</form>
+<table class="table bg-white shadow-sm align-middle">
+  <thead><tr><th>Horário</th><th>Pet / Tutor</th><th>Serviço</th><th>Profissional</th><th>Valor</th><th>Status</th><th></th></tr></thead>
+  {% for a in ags %}
+  <tr class="{% if a.status == 'CANCELADO' %}text-decoration-line-through text-muted{% endif %}">
+    <td>{{ a.inicio|time:"H:i" }}–{{ a.hora_fim|time:"H:i" }}</td>
+    <td><a href="{% url 'pet_historico' a.pet.pk %}">{{ a.pet.nome }}</a><div class="small text-muted">{{ a.pet.cliente.nome }}</div></td>
+    <td>{{ a.servico }}</td><td>{{ a.profissional }}</td><td>R$ {{ a.valor_cobrado }}</td>
+    <td><span class="badge text-bg-{% if a.status == 'CONCLUIDO' %}success{% elif a.status == 'CANCELADO' %}danger{% else %}secondary{% endif %}">{{ a.get_status_display }}</span></td>
+    <td class="text-end">
+      {% if a.pode_alterar and user.perfil != 'PROFISSIONAL' %}
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'reagendar' a.pk %}">Reagendar</a>
+        <form method="post" action="{% url 'cancelar' a.pk %}" class="d-inline">{% csrf_token %}
+          <button class="btn btn-sm btn-outline-danger">Cancelar</button></form>
+      {% endif %}
+      {% if a.pode_concluir and user.perfil != 'ATENDENTE' %}
+        <form method="post" action="{% url 'concluir' a.pk %}" class="d-inline">{% csrf_token %}
+          <button class="btn btn-sm btn-success">Concluir</button></form>
+      {% endif %}
+    </td></tr>
+  {% empty %}<tr><td colspan="7" class="text-muted">Nenhum agendamento neste dia.</td></tr>{% endfor %}
+</table>
+{% endblock %}

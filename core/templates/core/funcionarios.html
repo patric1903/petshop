@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3"><h4>Funcionários</h4>
+  <a class="btn btn-primary" href="{% url 'funcionario_novo' %}">Novo funcionário</a></div>
+<table class="table bg-white shadow-sm">
+  <thead><tr><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Especialidade</th><th>Situação</th><th></th></tr></thead>
+  {% for f in funcionarios %}<tr><td>{{ f.nome }}</td><td>{{ f.email }}</td><td>{{ f.get_perfil_display }}</td>
+    <td>{{ f.especialidade }}</td>
+    <td>{% if f.is_active %}<span class="badge text-bg-success">Ativo</span>{% else %}<span class="badge text-bg-secondary">Desativado</span>{% endif %}</td>
+    <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'funcionario_editar' f.pk %}">Editar</a></td></tr>{% endfor %}
+</table>
+{% endblock %}

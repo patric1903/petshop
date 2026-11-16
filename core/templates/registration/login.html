@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% block title %}Entrar · PetCare{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-5">
+  <div class="card shadow-sm"><div class="card-body p-4">
+    <h4 class="mb-3">Entrar no sistema</h4>
+    {% if form.errors %}<div class="alert alert-danger">E-mail ou senha incorretos, ou conta desativada.</div>{% endif %}
+    <form method="post">{% csrf_token %}
+      <div class="mb-3"><label class="form-label">E-mail</label>
+        <input type="email" name="username" class="form-control" autofocus required></div>
+      <div class="mb-3"><label class="form-label">Senha</label>
+        <input type="password" name="password" class="form-control" required></div>
+      <button class="btn btn-primary w-100">Entrar</button>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}

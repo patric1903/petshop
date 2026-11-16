@@ -1,0 +1,30 @@
+{% extends "core/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+  <div><h4 class="mb-0">{{ pet.nome }}</h4>
+    <span class="text-muted">{{ pet.get_especie_display }}{% if pet.raca %} · {{ pet.raca }}{% endif %}{% if pet.data_nascimento %} · nasc. {{ pet.data_nascimento|date:"d/m/Y" }}{% endif %} · Tutor: {{ pet.cliente.nome }} ({{ pet.cliente.telefone }})</span></div>
+  <a class="btn btn-primary align-self-start" href="{% url 'vacina_nova' pet.pk %}">Registrar vacina</a>
+</div>
+<div class="row g-3">
+ <div class="col-lg-6"><div class="card shadow-sm"><div class="card-header">Vacinas</div>
+  <ul class="list-group list-group-flush">
+  {% for v in vacinas %}<li class="list-group-item">
+    <strong>{{ v.nome }}</strong> · aplicada em {{ v.data_aplicacao|date:"d/m/Y" }} por {{ v.aplicada_por }}{% if v.lote %} · lote {{ v.lote }}{% endif %}
+    {% if v.data_proxima_dose %}<br>Próxima dose: {{ v.data_proxima_dose|date:"d/m/Y" }}
+      {% if v.situacao == 'vencida' %}<span class="badge text-bg-danger">VENCIDA</span>
+      {% elif v.situacao == 'a_vencer' %}<span class="badge text-bg-warning">vence em breve</span>
+      {% else %}<span class="badge text-bg-success">em dia</span>{% endif %}{% endif %}
+  </li>{% empty %}<li class="list-group-item text-muted">Nenhuma vacina registrada.</li>{% endfor %}
+  </ul></div></div>
+ <div class="col-lg-6">
+  <div class="card shadow-sm mb-3"><div class="card-header">Próximos agendamentos</div>
+   <ul class="list-group list-group-flush">
+   {% for a in proximos %}<li class="list-group-item">{{ a.inicio|date:"d/m/Y H:i" }} · {{ a.servico }} · {{ a.profissional }}</li>
+   {% empty %}<li class="list-group-item text-muted">Nenhum.</li>{% endfor %}</ul></div>
+  <div class="card shadow-sm"><div class="card-header">Atendimentos realizados</div>
+   <ul class="list-group list-group-flush">
+   {% for a in atendimentos %}<li class="list-group-item">{{ a.inicio|date:"d/m/Y H:i" }} · {{ a.servico }} · {{ a.profissional }}</li>
+   {% empty %}<li class="list-group-item text-muted">Nenhum atendimento concluído.</li>{% endfor %}</ul></div>
+ </div>
+</div>
+{% endblock %}
