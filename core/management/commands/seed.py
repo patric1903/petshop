@@ -30,6 +30,7 @@ class Command(BaseCommand):
                 nome=nome, defaults=dict(tipo=tipo, duracao_minutos=dur, preco=preco))
 
         if Cliente.objects.exists():
+            self._atendimento_de_hoje(bia, servicos["Banho simples"])
             self.stdout.write("Dados de exemplo já existem."); return
         c1 = Cliente.objects.create(nome="Maria Souza", telefone="(51) 99999-1111",
                                     email="maria@email.com", endereco="Rua das Flores, 100")
@@ -52,4 +53,23 @@ class Command(BaseCommand):
         old.save()
         Receita.objects.create(agendamento=old, valor=old.valor_cobrado, forma_pagamento="PIX",
                                data_pagamento=passado.date())
+        self._atendimento_de_hoje(bia, servicos["Banho simples"])
         self.stdout.write(self.style.SUCCESS("Dados iniciais criados."))
+
+    def _atendimento_de_hoje(self, prof, servico):
+        """Garante um atendimento agendado hoje, para testar UC07 (concluir), receita e relatório."""
+        hoje = timezone.localdate()
+        if Agendamento.objects.filter(profissional=prof, inicio__date=hoje,
+                                      status=Agendamento.AGENDADO).exists():
+            return
+        pet = Pet.objects.filter(nome="Rex").first() or Pet.objects.first()
+        if not pet:
+            return
+        meia_noite = timezone.make_aware(timezone.datetime.combine(hoje, timezone.datetime.min.time()))
+        inicio = max(timezone.now().replace(second=0, microsecond=0) - timedelta(minutes=30), meia_noite)
+        ag = Agendamento(pet=pet, servico=servico, profissional=prof, inicio=inicio)
+        try:
+            ag.full_clean()
+        except Exception:
+            return
+        ag.save()

@@ -152,6 +152,17 @@ class Permissoes(Base):
         a.refresh_from_db()
         self.assertEqual(a.status, Agendamento.CONCLUIDO)
 
+    def test_conclui_atendimento_do_dia_mesmo_que_mais_tarde(self):
+        agora = timezone.localtime()
+        inicio = agora.replace(hour=23, minute=0, second=0, microsecond=0)
+        if inicio.date() != timezone.localdate() or inicio < agora - timedelta(hours=1):
+            inicio = agora
+        a = self.ag(inicio=inicio)
+        self.client.force_login(self.p1)
+        self.client.post(reverse("concluir", args=[a.pk]))
+        a.refresh_from_db()
+        self.assertEqual(a.status, Agendamento.CONCLUIDO)
+
     def test_nao_conclui_atendimento_futuro(self):
         a = self.ag()
         self.login(self.p1)

@@ -210,8 +210,8 @@ def concluir(request, pk):
     if request.user.perfil == P and ag.profissional_id != request.user.pk:
         messages.error(request, "Você só pode concluir os seus próprios atendimentos.")
     elif not ag.pode_concluir:
-        messages.error(request, "Só é possível concluir atendimentos agendados cujo horário "
-                                "já começou.")
+        messages.error(request, "Só é possível concluir atendimentos agendados do dia atual "
+                                "ou de dias anteriores.")
     else:
         ag.status = Agendamento.CONCLUIDO
         ag.save()

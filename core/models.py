@@ -171,7 +171,9 @@ class Agendamento(models.Model):
 
     @property
     def pode_concluir(self):
-        return self.status == self.AGENDADO and self.ja_iniciou
+        """Concluir: atendimento agendado do dia atual (ou de dias anteriores)."""
+        return (self.status == self.AGENDADO
+                and timezone.localtime(self.inicio).date() <= timezone.localdate())
 
     def __str__(self):
         return f"{self.pet.nome} - {self.servico} - {timezone.localtime(self.inicio):%d/%m %H:%M}"

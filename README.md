@@ -33,7 +33,7 @@ UC12 Receita · UC13 Relatório financeiro · UC14 Funcionários (e cadastro de 
 ## Regras de negócio principais
 - `hora_fim = início + duração do serviço`; dois atendimentos do mesmo profissional não podem se sobrepor (horários colados são permitidos; cancelados liberam o horário).
 - `valor_cobrado` é gravado no agendamento no momento da reserva: reajustar o serviço não altera atendimentos antigos.
-- Só é possível cancelar/reagendar atendimentos ainda **não iniciados**. Atendimento já iniciado deve ser concluído pelo profissional.
+- Só é possível cancelar/reagendar atendimentos ainda **não iniciados**. O profissional conclui atendimentos do **dia atual** (ou de dias anteriores); atendimentos de dias futuros não podem ser concluídos.
 - Vacina registra quem aplicou e a data da próxima dose; o painel destaca vencidas e a vencer em 30 dias.
 - Funcionários não são excluídos, apenas desativados (campo `ativo`, que bloqueia o login).
 - Pagamento integral: um atendimento concluído gera uma única receita (pagamento parcial fora do escopo).
